@@ -80,7 +80,6 @@ def get_course_info(course_url):
         'commitment': commitment,
         'stars': stars,
     }
-    print([item for item in course_info.items()])
     return course_info
 
 
