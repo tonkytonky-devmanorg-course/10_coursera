@@ -39,14 +39,10 @@ def get_courses_list(number):
         'https://www.coursera.org/sitemap~www~courses.xml').text
     courses = ET.fromstring(courses)
     namespace = {'xmlns': "http://www.sitemaps.org/schemas/sitemap/0.9"}
-    courses_full_list = [
+    courses_urls = [
         loc.text for loc in courses.findall('.//xmlns:loc', namespace)]
 
-    courses = set()
-    while len(courses) < number:
-        courses.add(random.choice(courses_full_list))
-
-    return list(courses)
+    return random.sample(courses_urls, k=number)
 
 
 def get_course_info(course_url):
