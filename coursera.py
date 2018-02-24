@@ -9,11 +9,7 @@ import requests
 
 
 def _main():
-    parser = argparse.ArgumentParser()
-    args = get_args(parser)
-    if not path.exists(path.split(args.path)[0]):
-        parser.error('a path to write file not found, '
-                     'specify existing path in `path` argument')
+    args = get_args(argparse.ArgumentParser())
 
     courses_list = get_courses_list(args.number)
     courses_info = [get_course_info(course) for course in courses_list]
