@@ -33,7 +33,7 @@ def get_args(parser):
     return parser.parse_args()
 
 
-def get_courses_list(number):
+def get_random_courses_urls(number):
     print('Получение списка курсов...')
     courses = requests.get(
         'https://www.coursera.org/sitemap~www~courses.xml').text
