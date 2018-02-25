@@ -11,7 +11,7 @@ import requests
 def _main():
     args = get_args(argparse.ArgumentParser())
 
-    courses_list = get_courses_list(args.number)
+    courses_list = get_random_courses_urls(args.number)
     courses_info = [get_course_info(course) for course in courses_list]
 
     output_courses_info_to_xlsx(courses_info, args.path)
@@ -52,27 +52,26 @@ def get_course_info(course_url):
         course_response.content.decode('utf-8'), 'html.parser')
 
     language_node = course.find('div', class_='rc-Language')
-    language = language_node.text if language_node else '-'
 
-    commitment_node = course.find('i', class_='cif-clock')
-    if commitment_node:
-        for parent in commitment_node.parents:
-            if parent.name == 'tr':
-                break
-        commitment = parent.find('td', class_='td-data').text
-    else:
-        commitment = '-'
+    start_node = course.find('div', class_='startdate')
 
-    stars_node = course.find('div', class_='ratings-info')
-    stars = stars_node.find_all('div')[1].text if stars_node else '-'
+    weeks_nodes = course.find_all('div', class_='week-heading')
+    duration_node = None
+    if weeks_nodes:
+        duration_node = weeks_nodes[-1]
 
-    course_info = {
+    stars_parent_node = course.find('div', class_='rc-RatingsHeader')
+    stars_node = None
+    if stars_parent_node:
+        stars_node = stars_parent_node.find('div', class_='ratings-text')
+
+    return {
         'name': course.h1.text,
-        'language': language,
-        'commitment': commitment,
-        'stars': stars,
+        'language': language_node.text if language_node else '-',
+        'start': start_node.text if start_node else '-',
+        'duration': ''.join(char for char in duration_node.text if char.isdigit()) if duration_node else '-',
+        'stars': stars_node.text if stars_node else '-',
     }
-    return course_info
 
 
 def output_courses_info_to_xlsx(courses_info, filepath):
@@ -80,6 +79,7 @@ def output_courses_info_to_xlsx(courses_info, filepath):
     headers = [
         'Название',
         'Язык',
+        'Дата начала'
         'Количество недель',
         'Средняя оценка',
     ]
@@ -91,7 +91,8 @@ def output_courses_info_to_xlsx(courses_info, filepath):
         ws.append([
             course_info['name'],
             course_info['language'],
-            course_info['commitment'],
+            course_info['start'],
+            course_info['duration'],
             course_info['stars'],
         ])
 
