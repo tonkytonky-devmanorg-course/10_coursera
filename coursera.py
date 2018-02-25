@@ -75,9 +75,9 @@ def get_course_info(course_url):
         'name': course.h1.text,
         'language': language_node.text if language_node else '-',
         'start': start_node.text if start_node else '-',
-        'duration': ''.join(
+        'duration': int(''.join(
             char for char in duration_node.text if char.isdigit()
-        ) if duration_node else '-',
+        )) if duration_node else '-',
         'stars': stars_node.text if stars_node else '-',
     }
 
@@ -87,7 +87,7 @@ def output_courses_info_to_xlsx(workbook, courses_info):
     headers = [
         'Название',
         'Язык',
-        'Дата начала'
+        'Дата начала',
         'Количество недель',
         'Средняя оценка',
     ]
