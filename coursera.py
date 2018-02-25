@@ -10,11 +10,15 @@ import requests
 def _main():
     args = get_args(argparse.ArgumentParser())
 
-    courses_list = get_random_courses_urls(args.number)
-    courses_info = [get_course_info(course) for course in courses_list]
+    courses_urls = get_random_courses_urls(get_page_from_web(
+        'https://www.coursera.org/sitemap~www~courses.xml'), args.number)
+    courses = [
+        get_course_info(get_page_from_web(course_url)) for
+        course_url in courses_urls
+    ]
 
     workbook = Workbook()
-    output_courses_info_to_xlsx(workbook, courses_info)
+    output_courses_info_to_xlsx(workbook, courses)
     workbook.save(args.path)
 
 
@@ -34,15 +38,13 @@ def get_args(parser):
     return parser.parse_args()
 
 
-def write_to_log(message):
-    print(message)
+def get_page_from_web(url, encoding='utf-8'):
+    response = requests.get(url)
+    return response.content.decode(encoding)
 
 
-def get_random_courses_urls(number):
-    write_to_log('Получение списка курсов...')
-    courses = requests.get(
-        'https://www.coursera.org/sitemap~www~courses.xml').text
-    courses = ET.fromstring(courses)
+def get_random_courses_urls(courses_page, number):
+    courses = ET.fromstring(courses_page)
     namespace = {'xmlns': "http://www.sitemaps.org/schemas/sitemap/0.9"}
     courses_urls = [
         loc.text for loc in courses.findall('.//xmlns:loc', namespace)
@@ -51,11 +53,8 @@ def get_random_courses_urls(number):
     return random.sample(courses_urls, k=number)
 
 
-def get_course_info(course_url):
-    write_to_log('Получение информации по курсу: {}'.format(course_url))
-    course_response = requests.get(course_url)
-    course = BeautifulSoup(
-        course_response.content.decode('utf-8'), 'html.parser')
+def get_course_info(course_page):
+    course = BeautifulSoup(course_page, 'html.parser')
 
     language_node = course.find('div', class_='rc-Language')
 
@@ -83,7 +82,6 @@ def get_course_info(course_url):
 
 
 def output_courses_info_to_xlsx(workbook, courses_info):
-    write_to_log('Запись в файл')
     headers = [
         'Название',
         'Язык',
