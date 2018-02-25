@@ -72,16 +72,17 @@ def get_course_info(course_page):
 
     return {
         'name': course.h1.text,
-        'language': language_node.text if language_node else '-',
-        'start': start_node.text if start_node else '-',
+        'language': language_node.text if language_node else None,
+        'start': start_node.text if start_node else None,
         'duration': int(''.join(
             char for char in duration_node.text if char.isdigit()
-        )) if duration_node else '-',
-        'stars': stars_node.text if stars_node else '-',
+        )) if duration_node else None,
+        'stars': stars_node.text if stars_node else None,
     }
 
 
-def output_courses_info_to_xlsx(workbook, courses_info):
+def output_courses_info_to_xlsx(workbook, courses):
+    worksheet = workbook.active
     headers = [
         'Название',
         'Язык',
@@ -89,16 +90,15 @@ def output_courses_info_to_xlsx(workbook, courses_info):
         'Количество недель',
         'Средняя оценка',
     ]
-    ws = workbook.active
-    ws.append(headers)
+    worksheet.append(headers)
 
-    for course_info in courses_info:
-        ws.append([
-            course_info['name'],
-            course_info['language'],
-            course_info['start'],
-            course_info['duration'],
-            course_info['stars'],
+    for course in courses:
+        worksheet.append([
+            course['name'] or '-',
+            course['language'] or '-',
+            course['start'] or '-',
+            course['duration'] or '-',
+            course['stars'] or '-',
         ])
 
 
