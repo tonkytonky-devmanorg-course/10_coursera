@@ -34,8 +34,12 @@ def get_args(parser):
     return parser.parse_args()
 
 
+def write_to_log(message):
+    print(message)
+
+
 def get_random_courses_urls(number):
-    print('Получение списка курсов...')
+    write_to_log('Получение списка курсов...')
     courses = requests.get(
         'https://www.coursera.org/sitemap~www~courses.xml').text
     courses = ET.fromstring(courses)
@@ -48,7 +52,7 @@ def get_random_courses_urls(number):
 
 
 def get_course_info(course_url):
-    print('Получение информации по курсу: {}'.format(course_url))
+    write_to_log('Получение информации по курсу: {}'.format(course_url))
     course_response = requests.get(course_url)
     course = BeautifulSoup(
         course_response.content.decode('utf-8'), 'html.parser')
@@ -79,7 +83,7 @@ def get_course_info(course_url):
 
 
 def output_courses_info_to_xlsx(workbook, courses_info):
-    print('Запись в файл')
+    write_to_log('Запись в файл')
     headers = [
         'Название',
         'Язык',
