@@ -13,7 +13,9 @@ def _main():
     courses_list = get_random_courses_urls(args.number)
     courses_info = [get_course_info(course) for course in courses_list]
 
-    output_courses_info_to_xlsx(courses_info, args.path)
+    workbook = Workbook()
+    output_courses_info_to_xlsx(workbook, courses_info)
+    workbook.save(args.path)
 
 
 def get_args(parser):
@@ -76,7 +78,7 @@ def get_course_info(course_url):
     }
 
 
-def output_courses_info_to_xlsx(courses_info, filepath):
+def output_courses_info_to_xlsx(workbook, courses_info):
     print('Запись в файл')
     headers = [
         'Название',
@@ -85,8 +87,7 @@ def output_courses_info_to_xlsx(courses_info, filepath):
         'Количество недель',
         'Средняя оценка',
     ]
-    wb = Workbook()
-    ws = wb.active
+    ws = workbook.active
     ws.append(headers)
 
     for course_info in courses_info:
@@ -97,8 +98,6 @@ def output_courses_info_to_xlsx(courses_info, filepath):
             course_info['duration'],
             course_info['stars'],
         ])
-
-    wb.save(filepath)
 
 
 if __name__ == '__main__':
