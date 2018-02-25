@@ -1,6 +1,5 @@
 import argparse
 import random
-from os import path
 import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
