@@ -39,7 +39,8 @@ def get_random_courses_urls(number):
     courses = ET.fromstring(courses)
     namespace = {'xmlns': "http://www.sitemaps.org/schemas/sitemap/0.9"}
     courses_urls = [
-        loc.text for loc in courses.findall('.//xmlns:loc', namespace)]
+        loc.text for loc in courses.findall('.//xmlns:loc', namespace)
+    ]
 
     return random.sample(courses_urls, k=number)
 
@@ -68,7 +69,9 @@ def get_course_info(course_url):
         'name': course.h1.text,
         'language': language_node.text if language_node else '-',
         'start': start_node.text if start_node else '-',
-        'duration': ''.join(char for char in duration_node.text if char.isdigit()) if duration_node else '-',
+        'duration': ''.join(
+            char for char in duration_node.text if char.isdigit()
+        ) if duration_node else '-',
         'stars': stars_node.text if stars_node else '-',
     }
 
