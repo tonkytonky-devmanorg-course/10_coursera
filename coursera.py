@@ -10,11 +10,13 @@ import requests
 def _main():
     args = get_args(argparse.ArgumentParser())
 
-    courses_urls = get_random_courses_urls(get_page_from_web(
-        'https://www.coursera.org/sitemap~www~courses.xml'), args.number)
+    courses_urls = get_random_courses_urls(
+        get_page_from_web('https://www.coursera.org/sitemap~www~courses.xml'),
+        args.number
+    )
     courses = [
-        get_course_info(get_page_from_web(course_url)) for
-        course_url in courses_urls
+        get_course(get_page_from_web(course_url))
+        for course_url in courses_urls
     ]
 
     workbook = Workbook()
@@ -53,18 +55,15 @@ def get_random_courses_urls(courses_page, number):
     return random.sample(courses_urls, k=number)
 
 
-def get_course_info(course_page):
+def get_course(course_page):
     course = BeautifulSoup(course_page, 'html.parser')
 
     language_node = course.find('div', class_='rc-Language')
-
     start_node = course.find('div', class_='startdate')
-
     weeks_nodes = course.find_all('div', class_='week-heading')
     duration_node = None
     if weeks_nodes:
         duration_node = weeks_nodes[-1]
-
     stars_parent_node = course.find('div', class_='rc-RatingsHeader')
     stars_node = None
     if stars_parent_node:
