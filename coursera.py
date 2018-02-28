@@ -42,7 +42,8 @@ def get_args(parser):
 
 def get_page_from_web(url, encoding='utf-8'):
     response = requests.get(url)
-    return response.content.decode(encoding)
+    response.encoding = encoding
+    return response.text
 
 
 def get_random_courses_urls(courses_page, number):
