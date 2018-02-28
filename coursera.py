@@ -59,24 +59,28 @@ def get_course(course_page):
     course = BeautifulSoup(course_page, 'html.parser')
 
     language_node = course.select_one('div.rc-Language')
+    language = language_node.text if language_node else None
     start_node = course.select_one('div.startdate')
+    start = start_node.text if start_node else None
     weeks_nodes = course.select('div.week-heading')
-    duration_node = None
     if weeks_nodes:
-        duration_node = weeks_nodes[-1]
-    stars_parent_node = course.find('div', class_='rc-RatingsHeader')
-    stars_node = None
+        duration = int(''.join(
+            char for char in weeks_nodes[-1].text if char.isdigit()
+        ))
+    else:
+        duration = None
+    stars_parent_node = course.select_one('div.rc-RatingsHeader')
     if stars_parent_node:
-        stars_node = stars_parent_node.find('div', class_='ratings-text')
+        stars = stars_parent_node.select_one('div.ratings-text').text
+    else:
+        stars = None
 
     return {
         'name': course.h1.text,
-        'language': language_node.text if language_node else None,
-        'start': start_node.text if start_node else None,
-        'duration': int(''.join(
-            char for char in duration_node.text if char.isdigit()
-        )) if duration_node else None,
-        'stars': stars_node.text if stars_node else None,
+        'language': language,
+        'start': start,
+        'duration': duration,
+        'stars': stars,
     }
 
 
