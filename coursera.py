@@ -11,11 +11,11 @@ def _main():
     args = get_args(argparse.ArgumentParser())
 
     courses_urls = get_random_courses_urls(
-        get_page_from_web('https://www.coursera.org/sitemap~www~courses.xml'),
+        fetch_page_from_web('https://www.coursera.org/sitemap~www~courses.xml'),
         args.number
     )
     courses = [
-        get_course(get_page_from_web(course_url))
+        get_course_info(fetch_page_from_web(course_url))
         for course_url in courses_urls
     ]
 
@@ -40,7 +40,7 @@ def get_args(parser):
     return parser.parse_args()
 
 
-def get_page_from_web(url, encoding='utf-8'):
+def fetch_page_from_web(url, encoding='utf-8'):
     response = requests.get(url)
     response.encoding = encoding
     return response.text
@@ -56,7 +56,7 @@ def get_random_courses_urls(courses_page, number):
     return random.sample(courses_urls, k=number)
 
 
-def get_course(course_page):
+def get_course_info(course_page):
     course = BeautifulSoup(course_page, 'html.parser')
 
     language_node = course.select_one('div.rc-Language')
