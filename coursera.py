@@ -58,9 +58,9 @@ def get_random_courses_urls(courses_page, number):
 def get_course(course_page):
     course = BeautifulSoup(course_page, 'html.parser')
 
-    language_node = course.find('div', class_='rc-Language')
-    start_node = course.find('div', class_='startdate')
-    weeks_nodes = course.find_all('div', class_='week-heading')
+    language_node = course.select_one('div.rc-Language')
+    start_node = course.select_one('div.startdate')
+    weeks_nodes = course.select('div.week-heading')
     duration_node = None
     if weeks_nodes:
         duration_node = weeks_nodes[-1]
